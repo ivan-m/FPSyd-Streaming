@@ -1,4 +1,7 @@
-.reveal h1 { font-size: 3em; }
+.reveal h1 {
+    width: 100%;
+    font-size: 3em;
+}
 
 .slides section.has-light-background,
 .slides section.has-light-background h1,
@@ -25,4 +28,8 @@
 .reveal pre {
     width: 100%;
     font-size: 0.8em;
+}
+
+.reveal blockquote {
+    width: 100%;
 }
