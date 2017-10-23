@@ -1,8 +1,71 @@
 ---
-title: Slideshows with Pandoc on Github
+title: I Streamed a Stream
 author: Ivan Lazar Miljenovic
-date: 17 January, 2017
+date: 25 October, 2017
 ...
+
+`Streaming`
+===========
+
+About the library
+-----------------
+
+Notes
+:   * It's a streaming library called streaming
+
+> * Unfortunately named
+> * Currently maintained by Andrew Martin
+> * Performs well compared to the competition
+
+Stream Processing
+-----------------
+
+Notes
+:   * Avoiding calling it "streaming"
+    * Nowadays, "stream processing" generally refers to parallel
+      programming.
+    * Usage predates that.
+    * Everyone knows what it is in Haskell, but no real definition.
+
+. . .
+
+> [...] P J Landin's original use for streams was to model the
+> histories of loop variables, but he also observed that streams could
+> have been used as a model for I/O in ALGOL 60.
+>
+> -- _A Survey Of Stream Processing, R. Stephens, 1995_
+
+* * *
+
+> _Stream processing_ defines a pipeline of operators that transform,
+> combine, or reduce (even to a single scalar) large amounts of
+> data. Characteristically, data is accessed strictly linearly rather
+> than randomly and repeatedly -- and processed uniformly. The upside
+> of the limited expressiveness is the opportunity to process large
+> amount of data efficiently, in constant and small space.
+>
+> -- _Oleg Kiselyov_, <http://okmij.org/ftp/Streams.html>
+
+A Brief, Incomplete, and Mostly Wrong History of Stream Processing {style="font-size:75%;width:100%"}
+==================================================================
+
+* * * *
+
+... with apologies to James Iry
+
+Pre-History (aka pre-2000)
+--------------------------
+
+Notes
+:   * Apparently quote was said at Haskell Symposium in 2008, so
+      people took that motto from the future to heart.
+
+> * Lazy I/O
+> * People grumbled, but accepted it.
+> * After all: "avoid success at all costs".
+> * `english -XAllowAmbiguousGrammar`{.bash}
+
+
 
 About this configuration
 ========================
