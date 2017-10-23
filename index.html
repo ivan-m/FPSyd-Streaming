@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="generator" content="pandoc">
   <meta name="author" content="Ivan Lazar Miljenovic" />
-  <title>Slideshows with Pandoc on Github</title>
+  <title>I Streamed a Stream</title>
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -69,11 +69,69 @@ code > span.in { color: #7f9f7f; font-weight: bold; } /* Information */
     <div class="slides">
 
 <section>
-    <h1 class="title">Slideshows with Pandoc on Github</h1>
+    <h1 class="title">I Streamed a Stream</h1>
     <h2 class="author">Ivan Lazar Miljenovic</h2>
-    <h3 class="date">17 January, 2017</h3>
+    <h3 class="date">25 October, 2017</h3>
 </section>
 
+<section><section id="streaming" class="titleslide slide level1"><h1><code>Streaming</code></h1></section><section id="about-the-library" class="slide level2">
+<h2>About the library</h2>
+<aside class="notes">
+<ul>
+<li>It’s a streaming library called streaming</li>
+</ul>
+</aside>
+<dl>
+</dl>
+<ul>
+<li class="fragment">Unfortunately named</li>
+<li class="fragment">Currently maintained by Andrew Martin</li>
+<li class="fragment">Performs well compared to the competition</li>
+</ul>
+</section><section id="stream-processing" class="slide level2">
+<h2>Stream Processing</h2>
+<aside class="notes">
+<ul>
+<li>Avoiding calling it “streaming”</li>
+<li>Nowadays, “stream processing” generally refers to parallel programming.</li>
+<li>Usage predates that.</li>
+<li>Everyone knows what it is in Haskell, but no real definition.</li>
+</ul>
+</aside>
+<dl>
+</dl>
+<div class="fragment">
+<blockquote>
+<p>[…] P J Landin’s original use for streams was to model the histories of loop variables, but he also observed that streams could have been used as a model for I/O in ALGOL 60.</p>
+<p>– <em>A Survey Of Stream Processing, R. Stephens, 1995</em></p>
+</blockquote>
+</div>
+</section><section class="slide level2">
+
+<blockquote>
+<p><em>Stream processing</em> defines a pipeline of operators that transform, combine, or reduce (even to a single scalar) large amounts of data. Characteristically, data is accessed strictly linearly rather than randomly and repeatedly – and processed uniformly. The upside of the limited expressiveness is the opportunity to process large amount of data efficiently, in constant and small space.</p>
+<p>– <em>Oleg Kiselyov</em>, <a href="http://okmij.org/ftp/Streams.html" class="uri">http://okmij.org/ftp/Streams.html</a></p>
+</blockquote>
+</section></section>
+<section><section id="a-brief-incomplete-and-mostly-wrong-history-of-stream-processing" class="titleslide slide level1" style="font-size:75%;width:100%"><h1>A Brief, Incomplete, and Mostly Wrong History of Stream Processing</h1></section><section class="slide level2">
+
+<p>… with apologies to James Iry</p>
+</section><section id="pre-history-aka-pre-2000" class="slide level2">
+<h2>Pre-History (aka pre-2000)</h2>
+<aside class="notes">
+<ul>
+<li>Apparently quote was said at Haskell Symposium in 2008, so people took that motto from the future to heart.</li>
+</ul>
+</aside>
+<dl>
+</dl>
+<ul>
+<li class="fragment">Lazy I/O</li>
+<li class="fragment">People grumbled, but accepted it.</li>
+<li class="fragment">After all: “avoid success at all costs”.</li>
+<li class="fragment"><code class="sourceCode bash"><span class="ex">english</span> -XAllowAmbiguousGrammar</code></li>
+</ul>
+</section></section>
 <section><section id="about-this-configuration" class="titleslide slide level1"><h1>About this configuration</h1></section><section id="headings" class="slide level2">
 <h2>Headings</h2>
 <ul>
