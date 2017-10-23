@@ -8,9 +8,9 @@ env:
   global:
     - INPUT_FILE=Slides.md
     - OUTPUT_FILE=index.html
-    - GH_REPO=ivan-m/pandoc-slideshow
+    - GH_REPO=ivan-m/FPSyd-Streaming
     - GH_BRANCH=gh-pages
-    - secure: cGB8XChmJfQDZCODsDu5T5HXbhpnBWnCOIPiOrde5msHQCdEds9SXjIzLP8DaPmKWBcYUnStUbwwaA50oXzlZaiGOxYWw8OWu2bPpzStxnJBwJ1CcAk/KL4DcPsXYzHeZhJTP4DVk2O3fcHo6f3PYeSWeUajUPtNd2kHp/hs4BJw+8x5+zN9U+0KB2xfNv0qgFd2YltKdYNFnRXJ1ztNg5rXw7ksXtmSu8NhwLF1VtHaXCiNQgF1Yt5IblT7IoteLeVu0F716T1t5x6rmZm8Aw9x2YlDUhVtc0kQNLuXNnx3AdJ34kp+PKHgHBrNgwiz2E6eEECiR0v/nANOiU43HfEUtp5s42mko3PdxsrYOS1hu8sPQ9iBXGhS83o7s1KWNhx0cY3JLFPUc7ghReJ72qHaFhLFDpkp46nEcO9O8NgUGVLJ9F6TFstBxHw+ghxC2Vq11RHKkfvaAobve+3iicduz9HLnycTzdWsqSk6u+e7zN1FBtu54v6m7y6tz0hDfZqLgf+kO2SqVC/4zYoIiqGK8tx4wGjc2PNctp77XFia1cYpXuqs2IR33vw8d0h4fcrj3zuOUGE9zWH9mPZnit4PfzrKvu4vU9c+1QBIarfTs4ONB5jXbMV0AZYdc/952zl0YrzRFzamjxOOyCsaa+tb4KAyKkm+5wJIvSKDa3c=
+    - secure: p82rPBLbx/EzHUngNyDgGlSUYQmmC73y1/GVnfsuyFoC0Fb9GFUSDnvy0eaOnlC6DFBYdNxNowkD0Edfs9D5GPCYbjGNEs5JzxwBcikjKui2BhzhEIuGoI4A0fFPdpFx53+Ry4rrn1wG/lw85oTr3DuMoU8PIEp7KfQBIFdXStcWFY2XRQTldpaCy2mwAOc0L9d+ukvTGdYMVr4twzYfBMCASye2xg6moR7jwzZOZ9UOLLd2ZY1ydr4Tw7V0egQNnICXNo0sWtFs3ZwAkWQBASjswoTeyUnFYv9KFMIee/QGTxdR23fqaD9Tw0IKNot+tkM3RoLYXT8SevtmmqvKW7CM6brN04SgB2ZQz1krOZFZBsD13oI30U8gsBBVbMeBGx3dEs02D8hU5AeO4ULKq7T1hZiEsF68WaxRTypn/VYGobIYnosnpNHYLtgy6OZU+oCh4ZXSJRuFgnj0F+O0KBvUkO5DP6d9fFPkh2aK+5oePphK/cmRprJU3h87tG9jnY5LIUYN9F/IfOFBT0KKFn8QEGH7xunAOpkLVUoRdlllThT2uiyHm+1j/yS5EmJDtxEilglTvbzbR0LPsmusCw7AYkz0GJu0aYysUfOJZSbLZkCQ/IC6p+Snk9Jiwgb258z8bP92SkuDn2ARFfr/0c3ujBWwFtQftVUgbzCynVQ=
 
 cache:
   directories:
@@ -30,8 +30,8 @@ addons:
     sources:
       - hvr-ghc
     packages:
-      - cabal-install-1.22
-      - ghc-7.10.1
+      - cabal-install-2.0
+      - ghc-8.2.2
 
 before_install:
   - export PATH=$HOME/.cabal/bin:$(printf "%s:" /opt/ghc/*/bin)$(printf "%s:" /opt/cabal/*/bin)$PATH
