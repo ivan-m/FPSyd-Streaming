@@ -32,4 +32,9 @@
 
 .reveal blockquote {
     width: 100%;
+    font-size: 75%;
+}
+
+.reveal div.sourceCode {
+    font-size: 75%;
 }
