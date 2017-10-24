@@ -301,11 +301,10 @@ code > span.in { color: #7f9f7f; font-weight: bold; } /* Information */
 <li class="fragment">First released in 2015</li>
 <li class="fragment">“The freely generated stream on a streamable functor”</li>
 </ul>
-</section><section class="slide level2">
-
+</section><section id="streaming-announcement" class="slide level2">
+<h2>Streaming Announcement</h2>
 <aside class="notes">
 <ul>
-<li>Original announcement</li>
 <li>Wait, that isn’t right…</li>
 </ul>
 </aside>
@@ -314,11 +313,12 @@ code > span.in { color: #7f9f7f; font-weight: bold; } /* Information */
 <blockquote>
 <p>I’m doing a (free) stream processing library (just a hobby, won’t be big and professional like gnu) for Haskell. This has been brewing since august, and is starting to get ready. I’d like any feedback on things people like/dislike in pipes, as my library is an attempt to implement <code>FreeT</code> in the style of <code>Pipes.Internal</code>.</p>
 </blockquote>
-</section><section class="slide level2">
-
+</section><section id="actual-streaming-announcement" class="slide level2">
+<h2>Actual Streaming Announcement</h2>
 <aside class="notes">
 <ul>
 <li>OK, real announcement on haskell-pipes mailing list</li>
+<li>Wait, there’s a stream in the stream?</li>
 </ul>
 </aside>
 <dl>
@@ -353,9 +353,8 @@ code > span.in { color: #7f9f7f; font-weight: bold; } /* Information */
 <dl>
 </dl>
 <div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">newtype</span> <span class="dt">ConduitM</span> i o m r <span class="fu">=</span> <span class="dt">ConduitM</span>
-    {<span class="ot"> unConduitM ::</span> forall b<span class="fu">.</span>
-                    (r <span class="ot">-&gt;</span> <span class="dt">Pipe</span> i i o () m b) <span class="ot">-&gt;</span> <span class="dt">Pipe</span> i i o () m b
-    }
+  {<span class="ot"> unConduitM ::</span> forall b<span class="fu">.</span>
+     (r <span class="ot">-&gt;</span> <span class="dt">Pipe</span> i i o () m b) <span class="ot">-&gt;</span> <span class="dt">Pipe</span> i i o () m b }
 
 <span class="kw">data</span> <span class="dt">Pipe</span> l i o u m r <span class="fu">=</span>
     <span class="dt">HaveOutput</span> (<span class="dt">Pipe</span> l i o u m r) (m ()) o
@@ -382,16 +381,19 @@ code > span.in { color: #7f9f7f; font-weight: bold; } /* Information */
 </div>
 </section><section id="outputting-values" class="slide level2">
 <h2>Outputting values</h2>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">-- | A left-strict pair; the base functor for streams of individual elements.</span>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">-- | A left-strict pair; the base functor</span>
+<span class="co">--   for streams of individual elements.</span>
 <span class="kw">data</span> <span class="dt">Of</span> a b <span class="fu">=</span> <span class="fu">!</span>a <span class="fu">:&gt;</span> b
-
-<span class="dt">Stream</span> (<span class="dt">Of</span> a) m r ≆ m ([a], r)</code></pre></div>
+  <span class="kw">deriving</span> (<span class="dt">Functor</span>)</code></pre></div>
+<div class="fragment">
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="dt">Stream</span> (<span class="dt">Of</span> a) m r ≈ m ([a], r)</code></pre></div>
 <ul>
 <li class="fragment">Why <code>f</code> rather than <code>Step !a (Stream f m r)</code>?
 <ul>
 <li class="fragment">Patience!</li>
 </ul></li>
 </ul>
+</div>
 </section><section id="what-this-means" class="slide level2">
 <h2>What this means</h2>
 <aside class="notes">
@@ -411,6 +413,208 @@ code > span.in { color: #7f9f7f; font-weight: bold; } /* Information */
 <li class="fragment">Conduit uses a similar type for its internal Stream Fusion framework!</li>
 </ul>
 </section></section>
+<section><section id="using-streaming" class="titleslide slide level1"><h1>Using <code>streaming</code></h1></section><section id="modules" class="slide level2">
+<h2>Modules</h2>
+<ul>
+<li class="fragment"><code>Streaming</code> module operates on generic <code>(Functor f)</code>; functions have unique names.</li>
+<li class="fragment"><code>Streaming.Prelude</code> typically uses <code>Of</code> and should be imported qualified.
+<ul>
+<li class="fragment">Re-exports <code>Streaming</code>.</li>
+</ul></li>
+</ul>
+</section><section id="example" class="slide level2">
+<h2>Example</h2>
+<aside class="notes">
+<ul>
+<li>Function composition!</li>
+<li>If you take away the <code>S.</code>, it looks like normal Haskell if we didn’t restrict IO</li>
+<li>Though <code>print</code> would need to be mapped.</li>
+<li>Note the simple <code>takeWhile</code> to stop trying to get more input.</li>
+<li>Demo</li>
+</ul>
+</aside>
+<dl>
+</dl>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">import qualified</span> <span class="dt">Streaming.Prelude</span> <span class="kw">as</span> <span class="dt">S</span>
+<span class="kw">import           </span><span class="dt">Text.Read</span>            (readMaybe)
+
+<span class="ot">double ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span>
+double <span class="fu">=</span> (<span class="fu">*</span><span class="dv">2</span>)
+
+<span class="ot">doubleLines ::</span> <span class="dt">IO</span> ()
+doubleLines <span class="fu">=</span> S.print
+              <span class="fu">.</span> S.map double
+              <span class="fu">.</span> S.mapMaybe readMaybe
+              <span class="fu">.</span> S.takeWhile (not <span class="fu">.</span> null)
+              <span class="fu">$</span> S.repeatM getLine</code></pre></div>
+</section><section id="minimal-tutorials-required" class="slide level2">
+<h2>Minimal tutorials required!</h2>
+<ul>
+<li class="fragment">If you’re used to Haskell and using lists, then using <code>streaming</code> requires minimal mental switching.</li>
+<li class="fragment">Though there are a few “gotchas”…</li>
+<li class="fragment">… that actually reflect the power of what it provides.</li>
+</ul>
+</section><section id="f-vs-of" class="slide level2">
+<h2><code>f</code> vs <code>Of</code></h2>
+<aside class="notes">
+<ul>
+<li>The <code>f</code> vs <code>Of</code> disconnect can get a bit confusing</li>
+<li>e.g. choosing which mapping function that you want</li>
+<li>Latter two are from <code>Streaming</code> (don’t need to be qualified)</li>
+<li>Why deal with the extra effort?</li>
+</ul>
+</aside>
+<dl>
+</dl>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">S.map<span class="ot"> ::</span> (<span class="dt">Monad</span> m) <span class="ot">=&gt;</span> (a <span class="ot">-&gt;</span> b)
+         <span class="ot">-&gt;</span> <span class="dt">Stream</span> (<span class="dt">Of</span> a) m r <span class="ot">-&gt;</span> <span class="dt">Stream</span> (<span class="dt">Of</span> b) m r
+
+S.mapM<span class="ot"> ::</span> (<span class="dt">Monad</span> m) <span class="ot">=&gt;</span> (a <span class="ot">-&gt;</span> m b)
+          <span class="ot">-&gt;</span> <span class="dt">Stream</span> (<span class="dt">Of</span> a) m r <span class="ot">-&gt;</span> <span class="dt">Stream</span> (<span class="dt">Of</span> b) m r
+
+S.maps<span class="ot"> ::</span> (<span class="dt">Functor</span> f, <span class="dt">Monad</span> m) <span class="ot">=&gt;</span> (forall x<span class="fu">.</span> f x <span class="ot">-&gt;</span> g x)
+          <span class="ot">-&gt;</span> <span class="dt">Stream</span> f m r <span class="ot">-&gt;</span> <span class="dt">Stream</span> g m r
+
+S.mapped<span class="ot"> ::</span> (<span class="dt">Functor</span> f, <span class="dt">Monad</span> m) <span class="ot">=&gt;</span> (forall x<span class="fu">.</span> f x <span class="ot">-&gt;</span> m (g x))
+            <span class="ot">-&gt;</span> <span class="dt">Stream</span> f m r <span class="ot">-&gt;</span> <span class="dt">Stream</span> g m r</code></pre></div>
+</section><section id="example-redux" class="slide level2">
+<h2>Example redux</h2>
+<p>What if you want to handle parsing errors?</p>
+<div class="fragment">
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">import qualified</span> <span class="dt">Streaming.Prelude</span> <span class="kw">as</span> <span class="dt">S</span>
+<span class="kw">import           </span><span class="dt">Text.Read</span>            (readEither)
+
+<span class="ot">doubleLinesError ::</span> <span class="dt">IO</span> ()
+doubleLinesError <span class="fu">=</span> S.print
+                   <span class="fu">.</span> S.map double
+                   <span class="fu">.</span> S.stdoutLn
+                   <span class="fu">.</span> S.map (<span class="st">&quot;Not an Int: &quot;</span> <span class="fu">++</span>)
+                   <span class="fu">.</span> S.partitionEithers
+                   <span class="fu">.</span> S.map readEither
+                   <span class="fu">.</span> S.takeWhile (not <span class="fu">.</span> null)
+                   <span class="fu">$</span> S.repeatM getLine</code></pre></div>
+</div>
+</section><section id="pop-quiz" class="slide level2">
+<h2>Pop Quiz</h2>
+<aside class="notes">
+<ul>
+<li>Answer: b</li>
+<li>Demo</li>
+</ul>
+</aside>
+<dl>
+</dl>
+<h3 id="will-this"><em>Will this:</em></h3>
+<ol type="a">
+<li class="fragment">Print all error cases first?</li>
+<li class="fragment">Print error cases as they occur?</li>
+</ol>
+</section><section id="what-black-magic-is-this" class="slide level2">
+<h2>What black magic is this?</h2>
+<aside class="notes">
+<ul>
+<li>The ability to have Streams containing other Streams is very useful!</li>
+</ul>
+</aside>
+<dl>
+</dl>
+<div class="fragment">
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">S.partitionEithers<span class="ot"> ::</span> (<span class="dt">Monad</span> m)
+                      <span class="ot">=&gt;</span> <span class="dt">Stream</span> (<span class="dt">Of</span> (<span class="dt">Either</span> a b)) m r
+                      <span class="ot">-&gt;</span> <span class="dt">Stream</span> (<span class="dt">Of</span> a) (<span class="dt">Stream</span> (<span class="dt">Of</span> b) m) r</code></pre></div>
+</div>
+</section><section id="streams-of-streams" class="slide level2">
+<h2>Streams of Streams</h2>
+<aside class="notes">
+<ul>
+<li>Leftover support isn’t as powerful as in Conduit; typically used with functions like <code>splitAt</code>.</li>
+<li>Streams as Monadic effects typically handled seperately; using <code>hoist</code> here doesn’t work well.</li>
+<li>Found stream of stream to work nicer than the pipes-group <code>FreeT</code> solution.</li>
+</ul>
+</aside>
+<dl>
+</dl>
+<ul>
+<li class="fragment"><code class="sourceCode haskell"><span class="dt">Stream</span> f m (<span class="dt">Stream</span> f m r)</code>
+<ul>
+<li class="fragment">Leftovers (ala Conduit)</li>
+</ul></li>
+<li class="fragment"><code class="sourceCode haskell"><span class="dt">Stream</span> f (<span class="dt">Stream</span> g m) r</code>
+<ul>
+<li class="fragment">A stream created as a Monadic effect</li>
+</ul></li>
+<li class="fragment"><code class="sourceCode haskell"><span class="dt">Stream</span> (<span class="dt">Stream</span> f m) m r</code>
+<ul>
+<li class="fragment">An actual stream of streams (e.g. grouping).</li>
+</ul></li>
+<li class="fragment"><code class="sourceCode haskell"><span class="dt">Stream</span> (<span class="dt">Of</span> (<span class="dt">Stream</span> f m v)) m r</code>
+<ul>
+<li class="fragment">Don’t think this is useful</li>
+</ul></li>
+<li class="fragment"><code class="sourceCode haskell"><span class="dt">Stream</span> (<span class="dt">ByteString</span> m) m r</code>
+<ul>
+<li class="fragment">Using <code>streaming-bytestring</code>.</li>
+</ul></li>
+</ul>
+</section><section id="production-example" class="slide level2">
+<h2>Production Example</h2>
+<p>TODO</p>
+</section></section>
+<section><section id="how-does-it-compare" class="titleslide slide level1"><h1>How does it compare?</h1></section><section id="benchmarks" class="slide level2" data-background="images/benchmarks.png" data-background-size="auto 100%">
+<h2></h2>
+<aside class="notes">
+<ul>
+<li>Based off of benchmarks from machines library</li>
+<li>Old results, as I had trouble running the benchmark</li>
+<li>With exception first one, streaming is first result (in first benchmark it’s the second one)</li>
+</ul>
+</aside>
+<dl>
+</dl>
+</section><section id="resource-handling" class="slide level2">
+<h2>Resource Handling</h2>
+<ul>
+<li class="fragment">Currently has <code>ResourceT</code> support</li>
+<li class="fragment">Found not to work very well in practice</li>
+<li class="fragment">Consensus on using <code>bracket</code>/<code>withXXX</code>/continuation idiom</li>
+<li class="fragment">My solution: <code>streaming-with</code>
+<ul>
+<li class="fragment">Helper class to make it easier to write and use brackets</li>
+</ul></li>
+</ul>
+</section><section id="available-packages" class="slide level2">
+<h2>Available Packages</h2>
+<aside class="notes">
+<ul>
+<li><code>streaming-commons</code> is an unrelated package, but used by <code>streaming-utils</code>.</li>
+<li>utils has pipes support, networking, compression, etc.</li>
+<li>eversion is for converting to the <code>foldl</code> library</li>
+<li>osm == Open Street Map</li>
+<li>process not yet released</li>
+</ul>
+</aside>
+<dl>
+</dl>
+<table style="width:74%;">
+<colgroup>
+<col style="width: 29%" />
+<col style="width: 44%" />
+</colgroup>
+<tbody>
+<tr class="odd">
+<td><p><code>streaming</code> <code>streaming-utils</code> <code>streaming-wai</code> <code>streaming-png</code> <code>streaming-osm</code> <code>streaming-with</code> <code>streaming-binary</code></p></td>
+<td><p><code>streaming-bytestring</code> <code>streaming-postgresql-simple</code> <code>streaming-conduit</code> <code>streaming-eversion</code> <code>streaming-cassava</code> <code>streaming-concurrency</code> <code>streaming-process</code> †</p></td>
+</tr>
+</tbody>
+</table>
+</section><section id="usage" class="slide level2">
+<h2>Usage</h2>
+<ul>
+<li class="fragment">Not used in as many packages as conduit or pipes.</li>
+<li class="fragment">It is used in Sparkle by Tweag though.</li>
+</ul>
+</section></section>
+<section><section id="stream-on" class="titleslide slide level1" data-background="images/stream.jpg" data-background-color="white"><h1>Stream on!</h1></section></section>
     </div>
   </div>
 
