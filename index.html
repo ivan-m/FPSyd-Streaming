@@ -404,7 +404,10 @@ code > span.in { color: #7f9f7f; font-weight: bold; } /* Information */
 <dl>
 </dl>
 <ul>
-<li class="fragment"><code>Stream (Of a) m r</code> is analogous to a <code>Source</code> or <code>Producer</code> in conduit and pipes</li>
+<li class="fragment"><code>Stream (Of a) m r</code> is analogous to a <code>Source</code> or <code>Producer</code> in conduit and pipes
+<ul>
+<li class="fragment">No bidirectional support, but how often is that needed?</li>
+</ul></li>
 <li class="fragment">No need for <code>forall</code> vs <code>()</code> vs <code>Void</code> confusion!</li>
 <li class="fragment">All other stream processors represent how to transform input to output.
 <ul>
