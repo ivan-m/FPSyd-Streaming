@@ -356,6 +356,13 @@ doubleLines = S.print
 Minimal tutorials required!
 ---------------------------
 
+Notes
+:   * No fancy operators, types tend to plug and play
+    * Knowing MFunctor and hoist can be helpful
+    * Lots of standard instances (exceptions, MonadBase, etc.)
+    * Could not think of actual tutorial-worthy material
+
+> * Notice the lack of streaming-specific operators!
 > * If you're used to Haskell and using lists, then using `streaming`
 >   requires minimal mental switching.
 > * Though there are a few "gotchas"...
