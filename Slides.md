@@ -199,11 +199,11 @@ Notes
 > * First released in 2015
 > * "The freely generated stream on a streamable functor"
 
-* * *
+Streaming Announcement
+----------------------
 
 Notes
-:   * Original announcement
-    * Wait, that isn't right...
+:   * Wait, that isn't right...
 
 > I'm doing a (free) stream processing library (just a hobby, won’t be
 > big and professional like gnu) for Haskell. This has been brewing
@@ -211,10 +211,12 @@ Notes
 > things people like/dislike in pipes, as my library  is an attempt to
 > implement `FreeT` in the style of `Pipes.Internal`.
 
-* * *
+Actual Streaming Announcement
+-----------------------------
 
 Notes
 :   * OK, real announcement on haskell-pipes mailing list
+    * Wait, there's a stream in the stream?
 
 > It's probably a terrible idea!
 >
@@ -249,9 +251,8 @@ Notes
 
 ```haskell
 newtype ConduitM i o m r = ConduitM
-    { unConduitM :: forall b.
-                    (r -> Pipe i i o () m b) -> Pipe i i o () m b
-    }
+  { unConduitM :: forall b.
+     (r -> Pipe i i o () m b) -> Pipe i i o () m b }
 
 data Pipe l i o u m r =
     HaveOutput (Pipe l i o u m r) (m ()) o
@@ -283,10 +284,16 @@ Outputting values
 -----------------
 
 ```haskell
--- | A left-strict pair; the base functor for streams of individual elements.
+-- | A left-strict pair; the base functor
+--   for streams of individual elements.
 data Of a b = !a :> b
+  deriving (Functor)
+```
 
-Stream (Of a) m r ≆ m ([a], r)
+. . .
+
+```haskell
+Stream (Of a) m r ≈ m ([a], r)
 ```
 
 > * Why `f` rather than `Step !a (Stream f m r)`?
@@ -307,6 +314,200 @@ Notes
 >       composition!
 > * Conduit uses a similar type for its internal Stream Fusion
 >   framework!
+
+Using `streaming`
+=================
+
+Modules
+-------
+
+> * `Streaming` module operates on generic `(Functor f)`; functions
+>   have unique names.
+> * `Streaming.Prelude` typically uses `Of` and should be imported
+>   qualified.
+>     - Re-exports `Streaming`.
+
+Example
+-------
+
+Notes
+:   * Function composition!
+    * If you take away the `S.`, it looks like normal Haskell if we
+      didn't restrict IO
+    * Though `print` would need to be mapped.
+    * Note the simple `takeWhile` to stop trying to get more input.
+    * Demo
+
+```haskell
+import qualified Streaming.Prelude as S
+import           Text.Read            (readMaybe)
+
+double :: Int -> Int
+double = (*2)
+
+doubleLines :: IO ()
+doubleLines = S.print
+              . S.map double
+              . S.mapMaybe readMaybe
+              . S.takeWhile (not . null)
+              $ S.repeatM getLine
+```
+
+Minimal tutorials required!
+---------------------------
+
+> * If you're used to Haskell and using lists, then using `streaming`
+>   requires minimal mental switching.
+> * Though there are a few "gotchas"...
+> * ... that actually reflect the power of what it provides.
+
+`f` vs `Of`
+-----------
+
+Notes
+:   * The `f` vs `Of` disconnect can get a bit confusing
+    * e.g. choosing which mapping function that you want
+    * Latter two are from `Streaming` (don't need to be qualified)
+    * Why deal with the extra effort?
+
+```haskell
+S.map :: (Monad m) => (a -> b)
+         -> Stream (Of a) m r -> Stream (Of b) m r
+
+S.mapM :: (Monad m) => (a -> m b)
+          -> Stream (Of a) m r -> Stream (Of b) m r
+
+S.maps :: (Functor f, Monad m) => (forall x. f x -> g x)
+          -> Stream f m r -> Stream g m r
+
+S.mapped :: (Functor f, Monad m) => (forall x. f x -> m (g x))
+            -> Stream f m r -> Stream g m r
+```
+
+Example redux
+-------------
+
+What if you want to handle parsing errors?
+
+. . .
+
+```haskell
+import qualified Streaming.Prelude as S
+import           Text.Read            (readEither)
+
+doubleLinesError :: IO ()
+doubleLinesError = S.print
+                   . S.map double
+                   . S.stdoutLn
+                   . S.map ("Not an Int: " ++)
+                   . S.partitionEithers
+                   . S.map readEither
+                   . S.takeWhile (not . null)
+                   $ S.repeatM getLine
+```
+
+Pop Quiz
+--------
+
+Notes
+:   * Answer: b
+    * Demo
+
+### _Will this:_
+
+> a) Print all error cases first?
+> b) Print error cases as they occur?
+
+What black magic is this?
+-------------------------
+
+Notes
+:   * The ability to have Streams containing other Streams is very useful!
+
+. . .
+
+```haskell
+S.partitionEithers :: (Monad m)
+                      => Stream (Of (Either a b)) m r
+                      -> Stream (Of a) (Stream (Of b) m) r
+```
+
+Streams of Streams
+------------------
+
+Notes
+:   * Leftover support isn't as powerful as in Conduit; typically used
+      with functions like `splitAt`.
+    * Streams as Monadic effects typically handled seperately; using
+      `hoist` here doesn't work well.
+    * Found stream of stream to work nicer than the pipes-group
+      `FreeT` solution.
+
+> * `Stream f m (Stream f m r)`{.haskell}
+>     - Leftovers (ala Conduit)
+> * `Stream f (Stream g m) r`{.haskell}
+>     - A stream created as a Monadic effect
+> * `Stream (Stream f m) m r`{.haskell}
+>     - An actual stream of streams (e.g. grouping).
+> * `Stream (Of (Stream f m v)) m r`{.haskell}
+>     - Don't think this is useful
+> * `Stream (ByteString m) m r`{.haskell}
+>     - Using `streaming-bytestring`.
+
+Production Example
+------------------
+
+TODO
+
+How does it compare?
+====================
+
+## {id="benchmarks" data-background="images/benchmarks.png" data-background-size="auto 100%"}
+
+Notes
+:   * Based off of benchmarks from machines library
+    * Old results, as I had trouble running the benchmark
+    * With exception first one, streaming is first result (in first
+      benchmark it's the second one)
+
+Resource Handling
+-----------------
+
+> * Currently has `ResourceT` support
+> * Found not to work very well in practice
+> * Consensus on using `bracket`/`withXXX`/continuation idiom
+> * My solution: `streaming-with`
+>     - Helper class to make it easier to write and use brackets
+
+Available Packages
+------------------
+
+Notes
+:   * `streaming-commons` is an unrelated package, but used by
+    `streaming-utils`.
+    * utils has pipes support, networking, compression, etc.
+    * eversion is for converting to the `foldl` library
+    * osm == Open Street Map
+    * process not yet released
+
++--------------------+-------------------------------+
+| `streaming`        | `streaming-bytestring`        |
+| `streaming-utils`  | `streaming-postgresql-simple` |
+| `streaming-wai`    | `streaming-conduit`           |
+| `streaming-png`    | `streaming-eversion`          |
+| `streaming-osm`    | `streaming-cassava`           |
+| `streaming-with`   | `streaming-concurrency`       |
+| `streaming-binary` | `streaming-process` †         |
++--------------------+-------------------------------+
+
+Usage
+-----
+
+> * Not used in as many packages as conduit or pipes.
+> * It is used in Sparkle by Tweag though.
+
+Stream on! {data-background="images/stream.jpg" data-background-color="white"}
+==========
 
 ---
 # reveal.js settings
