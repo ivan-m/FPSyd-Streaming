@@ -85,8 +85,35 @@ code > span.in { color: #7f9f7f; font-weight: bold; } /* Information */
 </dl>
 <ul>
 <li class="fragment">Unfortunately named</li>
-<li class="fragment">Currently maintained by Andrew Martin</li>
 <li class="fragment">Performs well compared to the competition</li>
+<li class="fragment">Whilst being a lot simpler!</li>
+</ul>
+</section><section id="how-i-discovered-streaming" class="slide level2">
+<h2>How I discovered <code>streaming</code></h2>
+<aside class="notes">
+<ul>
+<li>Never used any stream processing library before; lazy I/O sufficed!</li>
+<li>Had used postgresql-simple with quiver, and could have adapted the code to any stream processing library, but thought to use a standard one.</li>
+</ul>
+</aside>
+<dl>
+</dl>
+<ul>
+<li class="fragment">Introduced to quiver by Patryk Zadarnowski</li>
+<li class="fragment">Adopted a package pipes
+<ul>
+<li class="fragment">Converted to quiver as I needed return values</li>
+</ul></li>
+<li class="fragment">New project: let’s pick a library that’s actually used by others.
+<ul>
+<li class="fragment">Needed PostgreSQL support</li>
+</ul></li>
+<li class="fragment">Conduit: all solutions used <code>persistent</code></li>
+<li class="fragment"><code>pipes-postgresql-simple</code> by Oliver Charles
+<ul>
+<li class="fragment">Wait, it’s deprecated?</li>
+<li class="fragment">What’s this “streaming” library?</li>
+</ul></li>
 </ul>
 </section><section id="stream-processing" class="slide level2">
 <h2>Stream Processing</h2>
@@ -96,6 +123,7 @@ code > span.in { color: #7f9f7f; font-weight: bold; } /* Information */
 <li>Nowadays, “stream processing” generally refers to parallel programming.</li>
 <li>Usage predates that.</li>
 <li>Everyone knows what it is in Haskell, but no real definition.</li>
+<li>Not just Haskell: Scala, F#</li>
 </ul>
 </aside>
 <dl>
@@ -115,6 +143,14 @@ code > span.in { color: #7f9f7f; font-weight: bold; } /* Information */
 </section></section>
 <section><section id="a-brief-incomplete-and-mostly-wrong-history-of-stream-processing" class="titleslide slide level1" style="font-size:75%;width:100%"><h1>A Brief, Incomplete, and Mostly Wrong History of Stream Processing</h1></section><section class="slide level2">
 
+<aside class="notes">
+<ul>
+<li>This is for Haskell</li>
+<li>No claims made as to accuracy or completeness</li>
+</ul>
+</aside>
+<dl>
+</dl>
 <p>… with apologies to James Iry</p>
 </section><section id="pre-history-aka-pre-2000" class="slide level2">
 <h2>Pre-History (aka pre-2000)</h2>
@@ -131,52 +167,248 @@ code > span.in { color: #7f9f7f; font-weight: bold; } /* Information */
 <li class="fragment">After all: “avoid success at all costs”.</li>
 <li class="fragment"><code class="sourceCode bash"><span class="ex">english</span> -XAllowAmbiguousGrammar</code></li>
 </ul>
-</section></section>
-<section><section id="about-this-configuration" class="titleslide slide level1"><h1>About this configuration</h1></section><section id="headings" class="slide level2">
-<h2>Headings</h2>
+</section><section id="iteratees" class="slide level2">
+<h2>Iteratees</h2>
 <ul>
-<li><p>Pandoc puts top-level headings on their own page</p>
-<ul>
-<li>I use setext style headers for them to help make them stand out in the markdown</li>
-</ul></li>
-<li><p>Level-2 headings create new slides</p>
-<ul>
-<li>I prefer atx style headers for those to help add in metadata (e.g. images)</li>
-</ul></li>
-<li><p>You can use other headings as well</p>
-<ul>
-<li>Level-6 headings have been configured in the CSS to help show up as image attribution.</li>
-</ul></li>
+<li class="fragment">By Oleg Kiselyov</li>
+<li class="fragment">Dates back to ~2008</li>
+<li class="fragment">Everyone praised it for its amazing promise…</li>
+<li class="fragment">… but being by Oleg, hardly anyone understood how it worked</li>
 </ul>
-</section><section id="image-based-slide" class="slide level2" data-background="images/haskell.png" data-background-color="white">
-<h2>Image-based slide</h2>
+</section><section id="iteratee" class="slide level2">
+<h2><code>iteratee</code></h2>
 <ul>
-<li><p>This slide has a background image</p></li>
-<li><p>You may need to put attribution last (Pandoc gets confused sometimes).</p></li>
+<li class="fragment">Implementation of Iteratees by John Lato</li>
+<li class="fragment">2009 – 2014 (with Hackage update in 2016)</li>
 </ul>
-<h6 id="attribution-for-image">Attribution for image</h6>
-</section><section id="speaker-notes" class="slide level2">
-<h2>Speaker notes</h2>
-<ul>
-<li><p>I use a filter to turn a definition list labeled <code>Notes</code> into speaker notes (hit <code>o</code> in reveal.js).</p></li>
-<li><div class="sourceCode"><pre class="sourceCode markdown"><code class="sourceCode markdown">Notes
-:   * Note 1
-<span class="bn">    * Note 2</span></code></pre></div></li>
-<li><p>If you don’t want to use this, you can remove this filter from the pandoc-mode settings (and thus won’t need pandoc-as-a-library installed).</p></li>
-</ul>
+</section><section id="enumerator" class="slide level2">
+<h2><code>enumerator</code></h2>
 <aside class="notes">
 <ul>
-<li>Note 1</li>
-<li>Note 2</li>
+<li>Not sure when/why people started adopting this instead of <code>iteratee</code></li>
+<li>e.g. <code>snap</code> quickly switched to this</li>
 </ul>
 </aside>
 <dl>
 </dl>
-</section><section id="other" class="slide level2">
-<h2>Other</h2>
 <ul>
-<li><p>reveal.js settings - including specification of the CSS file - are set in a YAML block at the bottom of the markdown file.</p></li>
-<li><p>You can also abuse YAML blocks to add in comments (e.g. to help organise your file, or have a bibliography section with all your links).</p></li>
+<li class="fragment">Alternative implementation of Iteratees by John Millikin</li>
+<li class="fragment">2010 – 2011</li>
+<li class="fragment">Often referred to as an “iteratee” still</li>
+</ul>
+</section><section id="conduit" class="slide level2">
+<h2><code>conduit</code></h2>
+<aside class="notes">
+<ul>
+<li>Absorbed ideas from each other</li>
+<li>Conduit now has an implementation of pipes under the hood</li>
+<li>Conduit still claims to be more “production grade”</li>
+</ul>
+</aside>
+<dl>
+</dl>
+<ul>
+<li class="fragment">By Michael Snowman</li>
+<li class="fragment">First released 2011, still active</li>
+<li class="fragment">Declared as a more industrial/production-grade solution than pipes
+<ul>
+<li class="fragment">Without defining either term</li>
+<li class="fragment">Even though pipes didn’t yet exist</li>
+</ul></li>
+</ul>
+</section><section id="pipes" class="slide level2">
+<h2><code>pipes</code></h2>
+<ul>
+<li class="fragment">By Gabriel Gonzalez</li>
+<li class="fragment">First released in 2012, still active</li>
+<li class="fragment">Tried to validate anti-Haskeller’s opinions of “too much maths” by basing it on Category Theory.</li>
+</ul>
+</section><section id="the-great-conduit-pipes-war" class="slide level2">
+<h2>The great conduit-pipes war</h2>
+<ul>
+<li class="fragment">Fought primarily on the battlefields of Twitter and Reddit</li>
+<li class="fragment">Devolved into “best frenemies” situation</li>
+<li class="fragment"><blockquote>
+<p>Enemies, as well as lovers, come to resemble each other over a period of time.</p>
+<p>– <em>Sydney J. Harris</em></p>
+</blockquote></li>
+</ul>
+</section><section id="machines" class="slide level2">
+<h2><code>machines</code></h2>
+<aside class="notes">
+<ul>
+<li>Translates to “this is not a pipe”</li>
+</ul>
+</aside>
+<dl>
+</dl>
+<ul>
+<li class="fragment">By Edward Kmett
+<ul>
+<li class="fragment">As such, lots of great ideas with minimal documentation</li>
+</ul></li>
+<li class="fragment">First released in 2012, still active</li>
+<li class="fragment">“Networked stream transducers”</li>
+<li class="fragment">Allows for multiple inputs</li>
+<li class="fragment"><em>Ceci n’est pas une pipe</em></li>
+</ul>
+</section><section id="io-streams" class="slide level2">
+<h2><code>io-streams</code></h2>
+<aside class="notes">
+<ul>
+<li>Less used than conduits and pipes</li>
+</ul>
+</aside>
+<dl>
+</dl>
+<ul>
+<li class="fragment">By Gregory Collins</li>
+<li class="fragment">First released in 2013, still active</li>
+<li class="fragment">Aims to be simpler (e.g. no monad transformers) than the others</li>
+<li class="fragment">Developed for use with Snap Framework</li>
+</ul>
+</section><section id="quiver" class="slide level2">
+<h2><code>quiver</code></h2>
+<aside class="notes">
+<ul>
+<li>I probably wrote the most quiver code out of anyone</li>
+<li>The complexity in question is to allow both pushing and pulling of values, but in practice we just pushed.</li>
+</ul>
+</aside>
+<dl>
+</dl>
+<ul>
+<li class="fragment">By Patryk Zadarnowski</li>
+<li class="fragment">All releases in 2015</li>
+<li class="fragment">What you get when you say “You know what pipes needs? More complexity!”</li>
+<li class="fragment">Return values actually useful!</li>
+</ul>
+</section><section id="streaming-1" class="slide level2">
+<h2><code>streaming</code></h2>
+<aside class="notes">
+<ul>
+<li>The subject of this talk</li>
+<li>See, I got here eventually!</li>
+</ul>
+</aside>
+<dl>
+</dl>
+<ul>
+<li class="fragment">By Michael Thompson
+<ul>
+<li class="fragment">Now maintained by Andrew Martin and a GitHub organization</li>
+</ul></li>
+<li class="fragment">First released in 2015</li>
+<li class="fragment">“The freely generated stream on a streamable functor”</li>
+</ul>
+</section><section class="slide level2">
+
+<aside class="notes">
+<ul>
+<li>Original announcement</li>
+<li>Wait, that isn’t right…</li>
+</ul>
+</aside>
+<dl>
+</dl>
+<blockquote>
+<p>I’m doing a (free) stream processing library (just a hobby, won’t be big and professional like gnu) for Haskell. This has been brewing since august, and is starting to get ready. I’d like any feedback on things people like/dislike in pipes, as my library is an attempt to implement <code>FreeT</code> in the style of <code>Pipes.Internal</code>.</p>
+</blockquote>
+</section><section class="slide level2">
+
+<aside class="notes">
+<ul>
+<li>OK, real announcement on haskell-pipes mailing list</li>
+</ul>
+</aside>
+<dl>
+</dl>
+<blockquote>
+<p>It’s probably a terrible idea!</p>
+<p><code>streaming</code> is an attempt to implement <code>FreeT</code> in the style of <code>Pipes.Internal</code>, with a zillion more associated functions. There is a Prelude especially for the fundamental ‘Producer’ case - <code>Stream ((,) a) m r</code> and its iterations, <code>Stream (Stream ((,)a) m) m r</code>.</p>
+</blockquote>
+</section></section>
+<section><section id="compare-the-types" class="titleslide slide level1"><h1>Compare the types</h1></section><section id="pipes-1" class="slide level2">
+<h2><code>pipes</code></h2>
+<aside class="notes">
+<ul>
+<li>This first as it makes it easier to compare conduit to pipes</li>
+<li>Can feed values in both directions</li>
+</ul>
+</aside>
+<dl>
+</dl>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">Proxy</span> a&#39; a b&#39; b m r
+    <span class="fu">=</span> <span class="dt">Request</span> a&#39; (a  <span class="ot">-&gt;</span> <span class="dt">Proxy</span> a&#39; a b&#39; b m r )
+    <span class="fu">|</span> <span class="dt">Respond</span> b  (b&#39; <span class="ot">-&gt;</span> <span class="dt">Proxy</span> a&#39; a b&#39; b m r )
+    <span class="fu">|</span> <span class="dt">M</span>          (m    (<span class="dt">Proxy</span> a&#39; a b&#39; b m r))
+    <span class="fu">|</span> <span class="dt">Pure</span>    r</code></pre></div>
+</section><section id="conduit-1" class="slide level2">
+<h2><code>conduit</code></h2>
+<aside class="notes">
+<ul>
+<li><code>Pipe ⩰ Proxy + Leftovers</code></li>
+</ul>
+</aside>
+<dl>
+</dl>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">newtype</span> <span class="dt">ConduitM</span> i o m r <span class="fu">=</span> <span class="dt">ConduitM</span>
+    {<span class="ot"> unConduitM ::</span> forall b<span class="fu">.</span>
+                    (r <span class="ot">-&gt;</span> <span class="dt">Pipe</span> i i o () m b) <span class="ot">-&gt;</span> <span class="dt">Pipe</span> i i o () m b
+    }
+
+<span class="kw">data</span> <span class="dt">Pipe</span> l i o u m r <span class="fu">=</span>
+    <span class="dt">HaveOutput</span> (<span class="dt">Pipe</span> l i o u m r) (m ()) o
+  <span class="fu">|</span> <span class="dt">NeedInput</span> (i <span class="ot">-&gt;</span> <span class="dt">Pipe</span> l i o u m r) (u <span class="ot">-&gt;</span> <span class="dt">Pipe</span> l i o u m r)
+  <span class="fu">|</span> <span class="dt">Done</span> r
+  <span class="fu">|</span> <span class="dt">PipeM</span> (m (<span class="dt">Pipe</span> l i o u m r))
+  <span class="fu">|</span> <span class="dt">Leftover</span> (<span class="dt">Pipe</span> l i o u m r) l</code></pre></div>
+</section><section id="streaming-2" class="slide level2">
+<h2><code>streaming</code></h2>
+<aside class="notes">
+<ul>
+<li>No input values!</li>
+<li><code>Functor f</code></li>
+<li>Where are the actual output values?</li>
+</ul>
+</aside>
+<dl>
+</dl>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">Stream</span> f m r <span class="fu">=</span> <span class="dt">Step</span> <span class="fu">!</span>(f (<span class="dt">Stream</span> f m r))
+                  <span class="fu">|</span> <span class="dt">Effect</span> (m (<span class="dt">Stream</span> f m r))
+                  <span class="fu">|</span> <span class="dt">Return</span> r</code></pre></div>
+<div class="fragment">
+<p>Wait, that can’t be it, can it?</p>
+</div>
+</section><section id="outputting-values" class="slide level2">
+<h2>Outputting values</h2>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">-- | A left-strict pair; the base functor for streams of individual elements.</span>
+<span class="kw">data</span> <span class="dt">Of</span> a b <span class="fu">=</span> <span class="fu">!</span>a <span class="fu">:&gt;</span> b
+
+<span class="dt">Stream</span> (<span class="dt">Of</span> a) m r ≆ m ([a], r)</code></pre></div>
+<ul>
+<li class="fragment">Why <code>f</code> rather than <code>Step !a (Stream f m r)</code>?
+<ul>
+<li class="fragment">Patience!</li>
+</ul></li>
+</ul>
+</section><section id="what-this-means" class="slide level2">
+<h2>What this means</h2>
+<aside class="notes">
+<ul>
+<li>Conduit is considering ditching foralls</li>
+</ul>
+</aside>
+<dl>
+</dl>
+<ul>
+<li class="fragment"><code>Stream (Of a) m r</code> is analogous to a <code>Source</code> or <code>Producer</code> in conduit and pipes</li>
+<li class="fragment">No need for <code>forall</code> vs <code>()</code> vs <code>Void</code> confusion!</li>
+<li class="fragment">All other stream processors represent how to transform input to output.
+<ul>
+<li class="fragment">Streaming instead uses normal functions and function composition!</li>
+</ul></li>
+<li class="fragment">Conduit uses a similar type for its internal Stream Fusion framework!</li>
 </ul>
 </section></section>
     </div>
