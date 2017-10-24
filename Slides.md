@@ -307,6 +307,7 @@ Notes
 
 > * `Stream (Of a) m r` is analogous to a `Source` or `Producer` in
 >   conduit and pipes
+>     - No bidirectional support, but how often is that needed?
 > * No need for `forall` vs `()` vs `Void` confusion!
 > * All other stream processors represent how to transform input to
 >   output.
