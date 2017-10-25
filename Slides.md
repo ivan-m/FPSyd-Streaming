@@ -577,6 +577,29 @@ Usage
 > * Not used in as many packages as conduit or pipes.
 > * It is used in Sparkle by Tweag though.
 
+Just remember
+-------------
+
+Notes
+:   * Functions taken from streaming-conduit
+
+> * Pipes, Conduits, etc. are "functions" on how to transform inputs
+>   to outputs
+> * Streams are just how to get values.
+
+. . .
+
+```haskell
+-- | Treat a 'Conduit' as a function between 'Stream's.
+asStream :: (Monad m) => Conduit i m o
+            -> Stream (Of i) m () -> Stream (Of o) m ()
+
+-- | Treat a function between 'Stream's as a 'Conduit'.
+asConduit :: (Monad m)
+             => (Stream (Of i) m () -> Stream (Of o) m r)
+             -> ConduitM i o m r
+```
+
 Stream on! {data-background="images/stream.jpg" data-background-color="white"}
 ==========
 
