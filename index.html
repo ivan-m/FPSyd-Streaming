@@ -74,7 +74,7 @@ code > span.in { color: #7f9f7f; font-weight: bold; } /* Information */
     <h3 class="date">25 October, 2017</h3>
 </section>
 
-<section><section id="streaming" class="titleslide slide level1"><h1><code>Streaming</code></h1></section><section id="about-the-library" class="slide level2">
+<section><section id="the-streaming-library" class="titleslide slide level1"><h1>The <code>streaming</code> library</h1></section><section id="about-the-library" class="slide level2">
 <h2>About the library</h2>
 <aside class="notes">
 <ul>
@@ -88,19 +88,18 @@ code > span.in { color: #7f9f7f; font-weight: bold; } /* Information */
 <li class="fragment">Performs well compared to the competition</li>
 <li class="fragment">Whilst being a lot simpler!</li>
 </ul>
-</section><section id="how-i-discovered-streaming" class="slide level2">
-<h2>How I discovered <code>streaming</code></h2>
+</section><section id="making-the-transition" class="slide level2">
+<h2>Making the transition</h2>
 <aside class="notes">
 <ul>
 <li>Never used any stream processing library before; lazy I/O sufficed!</li>
-<li>Had used postgresql-simple with quiver, and could have adapted the code to any stream processing library, but thought to use a standard one.</li>
 </ul>
 </aside>
 <dl>
 </dl>
 <ul>
 <li class="fragment">Introduced to quiver by Patryk Zadarnowski</li>
-<li class="fragment">Adopted a package pipes
+<li class="fragment">Adopted a package using pipes
 <ul>
 <li class="fragment">Converted to quiver as I needed return values</li>
 </ul></li>
@@ -108,6 +107,17 @@ code > span.in { color: #7f9f7f; font-weight: bold; } /* Information */
 <ul>
 <li class="fragment">Needed PostgreSQL support</li>
 </ul></li>
+</ul>
+</section><section id="need-postgresql-support" class="slide level2">
+<h2>Need PostgreSQL support</h2>
+<aside class="notes">
+<ul>
+<li>Had used postgresql-simple with quiver, and could have adapted the code to any stream processing library, but thought to use a standard one.</li>
+</ul>
+</aside>
+<dl>
+</dl>
+<ul>
 <li class="fragment">Conduit: all solutions used <code>persistent</code></li>
 <li class="fragment"><code>pipes-postgresql-simple</code> by Oliver Charles
 <ul>
@@ -151,7 +161,7 @@ code > span.in { color: #7f9f7f; font-weight: bold; } /* Information */
 </aside>
 <dl>
 </dl>
-<p>… with apologies to James Iry</p>
+<p>… with apologies to <a href="https://james-iry.blogspot.com.au/2009/05/brief-incomplete-and-mostly-wrong.html">James Iry</a></p>
 </section><section id="pre-history-aka-pre-2000" class="slide level2">
 <h2>Pre-History (aka pre-2000)</h2>
 <aside class="notes">
@@ -283,7 +293,7 @@ code > span.in { color: #7f9f7f; font-weight: bold; } /* Information */
 <li class="fragment">What you get when you say “You know what pipes needs? More complexity!”</li>
 <li class="fragment">Return values actually useful!</li>
 </ul>
-</section><section id="streaming-1" class="slide level2">
+</section><section id="streaming" class="slide level2">
 <h2><code>streaming</code></h2>
 <aside class="notes">
 <ul>
@@ -311,7 +321,7 @@ code > span.in { color: #7f9f7f; font-weight: bold; } /* Information */
 <dl>
 </dl>
 <blockquote>
-<p>I’m doing a (free) stream processing library (just a hobby, won’t be big and professional like gnu) for Haskell. This has been brewing since august, and is starting to get ready. I’d like any feedback on things people like/dislike in pipes, as my library is an attempt to implement <code>FreeT</code> in the style of <code>Pipes.Internal</code>.</p>
+<p>I’m doing a (free) stream processing library (just a hobby, won’t be big and professional like conduit) for Haskell. This has been brewing since august, and is starting to get ready. I’d like any feedback on things people like/dislike in pipes, as my library is an attempt to implement <code>FreeT</code> in the style of <code>Pipes.Internal</code>.</p>
 </blockquote>
 </section><section id="actual-streaming-announcement" class="slide level2">
 <h2>Actual Streaming Announcement</h2>
@@ -362,7 +372,7 @@ code > span.in { color: #7f9f7f; font-weight: bold; } /* Information */
   <span class="fu">|</span> <span class="dt">Done</span> r
   <span class="fu">|</span> <span class="dt">PipeM</span> (m (<span class="dt">Pipe</span> l i o u m r))
   <span class="fu">|</span> <span class="dt">Leftover</span> (<span class="dt">Pipe</span> l i o u m r) l</code></pre></div>
-</section><section id="streaming-2" class="slide level2">
+</section><section id="streaming-1" class="slide level2">
 <h2><code>streaming</code></h2>
 <aside class="notes">
 <ul>
@@ -398,7 +408,9 @@ code > span.in { color: #7f9f7f; font-weight: bold; } /* Information */
 <h2>What this means</h2>
 <aside class="notes">
 <ul>
+<li><code>forall</code>, etc. needed to close off input or output for Producers/Consumers/Effects.</li>
 <li>Conduit is considering ditching foralls</li>
+<li>Conduit actually uses something similar for its internal Stream Fusion</li>
 </ul>
 </aside>
 <dl>
@@ -413,7 +425,6 @@ code > span.in { color: #7f9f7f; font-weight: bold; } /* Information */
 <ul>
 <li class="fragment">Streaming instead uses normal functions and function composition!</li>
 </ul></li>
-<li class="fragment">Conduit uses a similar type for its internal Stream Fusion framework!</li>
 </ul>
 </section></section>
 <section><section id="using-streaming" class="titleslide slide level1"><h1>Using <code>streaming</code></h1></section><section id="modules" class="slide level2">
@@ -572,7 +583,71 @@ doubleLinesError <span class="fu">=</span> S.print
 </ul>
 </section><section id="production-example" class="slide level2">
 <h2>Production Example</h2>
-<p>TODO</p>
+<aside class="notes">
+<ul>
+<li>Just anonymised the comments and types a bit</li>
+<li><code>tryStreamData</code> splits into disjoint chunks, submits data to an API call, receives results, tries re-sending ones that failed.</li>
+<li>Type annotation on <code>withErr</code> not needed</li>
+<li>Had originally tried to just handle errors all in one go</li>
+</ul>
+</aside>
+<dl>
+</dl>
+<div class="sourceCode" style="font-size:70%"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">-- | Once authenticated, send the data through to the API.</span>
+<span class="ot">sendData ::</span> <span class="dt">Client</span> <span class="dt">UploadAPI</span> <span class="ot">-&gt;</span> <span class="dt">Options</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> ()
+sendData f opts <span class="fu">=</span>
+  withBinaryFileContents (dataFile opts) <span class="fu">$</span>
+    withErr
+    <span class="fu">.</span> withClientErrors     <span class="co">-- Handle errors from sending the data</span>
+    <span class="fu">.</span> tryStreamData f opts <span class="co">-- Send data to API</span>
+    <span class="fu">.</span> withClientErrors     <span class="co">-- Handle errors from parsing the CSV</span>
+    <span class="fu">.</span> transformData        <span class="co">-- Convert the CSV values to what we need</span>
+    <span class="fu">.</span> decodeByName         <span class="co">-- Convert the file contents into DBData</span>
+  <span class="kw">where</span>
+    <span class="co">-- | If some high-level CSV parsing exception occurs, print it.</span>
+<span class="ot">    withErr ::</span> <span class="dt">ExceptT</span> <span class="dt">CsvParseException</span> <span class="dt">IO</span> () <span class="ot">-&gt;</span> <span class="dt">IO</span> ()
+    withErr <span class="fu">=</span> (either (liftIO <span class="fu">.</span> print) return <span class="fu">=&lt;&lt;</span>) <span class="fu">.</span> runExceptT</code></pre></div>
+</section><section id="manual-streaming" class="slide level2">
+<h2>Manual Streaming</h2>
+<aside class="notes">
+<ul>
+<li>Probably the most complicated streaming code I’ve written</li>
+<li>Would like to clean up the <code>loop</code> bit but not sure how.</li>
+</ul>
+</aside>
+<dl>
+</dl>
+<div class="sourceCode" style="font-size:70%"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">-- | Take a stream of values and convert it into a stream of streams,</span>
+<span class="co">--   each of which has no two values with the same result of the</span>
+<span class="co">--   provided function.</span>
+<span class="ot">disjoint ::</span> forall a b m r<span class="fu">.</span> (<span class="dt">Eq</span> b, <span class="dt">Hashable</span> b, <span class="dt">Monad</span> m)
+            <span class="ot">=&gt;</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> <span class="dt">Stream</span> (<span class="dt">Of</span> a) m r
+            <span class="ot">-&gt;</span> <span class="dt">Stream</span> (<span class="dt">Stream</span> (<span class="dt">Of</span> a) m) m r
+disjoint f <span class="fu">=</span> loop
+  <span class="kw">where</span>
+    <span class="co">-- Keep finding disjoint streams until the stream is exhausted.</span>
+    loop stream <span class="fu">=</span> S.effect <span class="fu">$</span> <span class="kw">do</span>
+      e <span class="ot">&lt;-</span> S.next stream
+      return <span class="fu">$</span> <span class="kw">case</span> e <span class="kw">of</span>
+                 <span class="dt">Left</span> r <span class="ot">-&gt;</span> return r
+                 <span class="dt">Right</span> (a, stream&#39;) <span class="ot">-&gt;</span> S.wrap <span class="fu">$</span>
+                   loop <span class="fu">&lt;$&gt;</span> (S.yield a <span class="fu">*&gt;</span> nextDisjoint (f a) stream&#39;)
+
+    <span class="co">-- Get the next disjoint stream; i.e. split the stream when the</span>
+    <span class="co">-- first duplicate value is found.</span>
+    <span class="co">--</span>
+    <span class="co">-- Provided is an initial seed for values to be compared against.</span>
+<span class="ot">    nextDisjoint ::</span> b <span class="ot">-&gt;</span> <span class="dt">Stream</span> (<span class="dt">Of</span> a) m r
+                    <span class="ot">-&gt;</span> <span class="dt">Stream</span> (<span class="dt">Of</span> a) m (<span class="dt">Stream</span> (<span class="dt">Of</span> a) m r)
+    nextDisjoint initB <span class="fu">=</span> S.breakWhen step (<span class="dt">False</span>, HS.singleton initB)
+                                     fst id
+      <span class="kw">where</span>
+        <span class="co">-- breakWhen does the test /after/ the step, so we use an</span>
+        <span class="co">-- extra boolean to denote if it&#39;s broken.</span>
+        <span class="co">-- PRECONDITION: before calling set, the boolean is True</span>
+        step (_, set) a <span class="fu">=</span> (HS.member b set, HS.insert b set)
+          <span class="kw">where</span>
+            b <span class="fu">=</span> f a</code></pre></div>
 </section></section>
 <section><section id="how-does-it-compare" class="titleslide slide level1"><h1>How does it compare?</h1></section><section id="benchmarks" class="slide level2" data-background="images/benchmarks.png" data-background-size="auto 100%">
 <h2></h2>
@@ -627,6 +702,29 @@ doubleLinesError <span class="fu">=</span> S.print
 <li class="fragment">Not used in as many packages as conduit or pipes.</li>
 <li class="fragment">It is used in Sparkle by Tweag though.</li>
 </ul>
+</section><section id="just-remember" class="slide level2">
+<h2>Just remember</h2>
+<aside class="notes">
+<ul>
+<li>Functions taken from streaming-conduit</li>
+</ul>
+</aside>
+<dl>
+</dl>
+<ul>
+<li class="fragment">Pipes, Conduits, etc. are “functions” on how to transform inputs to outputs</li>
+<li class="fragment">Streams are just how to get values.</li>
+</ul>
+<div class="fragment">
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">-- | Treat a &#39;Conduit&#39; as a function between &#39;Stream&#39;s.</span>
+<span class="ot">asStream ::</span> (<span class="dt">Monad</span> m) <span class="ot">=&gt;</span> <span class="dt">Conduit</span> i m o
+            <span class="ot">-&gt;</span> <span class="dt">Stream</span> (<span class="dt">Of</span> i) m () <span class="ot">-&gt;</span> <span class="dt">Stream</span> (<span class="dt">Of</span> o) m ()
+
+<span class="co">-- | Treat a function between &#39;Stream&#39;s as a &#39;Conduit&#39;.</span>
+<span class="ot">asConduit ::</span> (<span class="dt">Monad</span> m)
+             <span class="ot">=&gt;</span> (<span class="dt">Stream</span> (<span class="dt">Of</span> i) m () <span class="ot">-&gt;</span> <span class="dt">Stream</span> (<span class="dt">Of</span> o) m r)
+             <span class="ot">-&gt;</span> <span class="dt">ConduitM</span> i o m r</code></pre></div>
+</div>
 </section></section>
 <section><section id="stream-on" class="titleslide slide level1" data-background="images/stream.jpg" data-background-color="white"><h1>Stream on!</h1></section></section>
     </div>
