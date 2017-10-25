@@ -465,7 +465,70 @@ Notes
 Production Example
 ------------------
 
-TODO
+Notes
+:   * Just anonymised the comments and types a bit
+    * `tryStreamData` splits into disjoint chunks, submits data to an
+      API call, receives results, tries re-sending ones that failed.
+    * Type annotation on `withErr` not needed
+    * Had originally tried to just handle errors all in one go
+
+```{.haskell style="font-size:70%"}
+-- | Once authenticated, send the data through to the API.
+sendData :: Client UploadAPI -> Options -> IO ()
+sendData f opts =
+  withBinaryFileContents (dataFile opts) $
+    withErr
+    . withClientErrors     -- Handle errors from sending the data
+    . tryStreamData f opts -- Send data to API
+    . withClientErrors     -- Handle errors from parsing the CSV
+    . transformData        -- Convert the CSV values to what we need
+    . decodeByName         -- Convert the file contents into DBData
+  where
+    -- | If some high-level CSV parsing exception occurs, print it.
+    withErr :: ExceptT CsvParseException IO () -> IO ()
+    withErr = (either (liftIO . print) return =<<) . runExceptT
+```
+
+Manual Streaming
+----------------
+
+Notes
+:   * Probably the most complicated streaming code I've written
+    * Would like to clean up the `loop` bit but not sure how.
+
+```{.haskell style="font-size:70%"}
+-- | Take a stream of values and convert it into a stream of streams,
+--   each of which has no two values with the same result of the
+--   provided function.
+disjoint :: forall a b m r. (Eq b, Hashable b, Monad m)
+            => (a -> b) -> Stream (Of a) m r
+            -> Stream (Stream (Of a) m) m r
+disjoint f = loop
+  where
+    -- Keep finding disjoint streams until the stream is exhausted.
+    loop stream = S.effect $ do
+      e <- S.next stream
+      return $ case e of
+                 Left r -> return r
+                 Right (a, stream') -> S.wrap $
+                   loop <$> (S.yield a *> nextDisjoint (f a) stream')
+
+    -- Get the next disjoint stream; i.e. split the stream when the
+    -- first duplicate value is found.
+    --
+    -- Provided is an initial seed for values to be compared against.
+    nextDisjoint :: b -> Stream (Of a) m r
+                    -> Stream (Of a) m (Stream (Of a) m r)
+    nextDisjoint initB = S.breakWhen step (False, HS.singleton initB)
+                                     fst id
+      where
+        -- breakWhen does the test /after/ the step, so we use an
+        -- extra boolean to denote if it's broken.
+        -- PRECONDITION: before calling set, the boolean is True
+        step (_, set) a = (HS.member b set, HS.insert b set)
+          where
+            b = f a
+```
 
 How does it compare?
 ====================
