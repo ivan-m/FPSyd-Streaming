@@ -4,8 +4,8 @@ author: Ivan Lazar Miljenovic
 date: 25 October, 2017
 ...
 
-`Streaming`
-===========
+The `streaming` library
+=======================
 
 About the library
 -----------------
@@ -17,21 +17,27 @@ Notes
 > * Performs well compared to the competition
 > * Whilst being a lot simpler!
 
-How I discovered `streaming`
-----------------------------
+Making the transition
+---------------------
 
 Notes
 :   * Never used any stream processing library before; lazy I/O
       sufficed!
-    * Had used postgresql-simple with quiver, and could have adapted
-      the code to any stream processing library, but thought to use a
-      standard one.
 
 > * Introduced to quiver by Patryk Zadarnowski
-> * Adopted a package pipes
+> * Adopted a package using pipes
 >     - Converted to quiver as I needed return values
 > * New project: let's pick a library that's actually used by others.
 >     - Needed PostgreSQL support
+
+Need PostgreSQL support
+-----------------------
+
+Notes
+:   * Had used postgresql-simple with quiver, and could have adapted
+      the code to any stream processing library, but thought to use a
+      standard one.
+
 > * Conduit: all solutions used `persistent`
 > * `pipes-postgresql-simple` by Oliver Charles
 >     - Wait, it's deprecated?
@@ -76,7 +82,8 @@ Notes
 :   * This is for Haskell
     * No claims made as to accuracy or completeness
 
-... with apologies to James Iry
+... with apologies to [James Iry](https://james-iry.blogspot.com.au/2009/05/brief-incomplete-and-mostly-wrong.html)
+
 
 Pre-History (aka pre-2000)
 --------------------------
@@ -206,10 +213,10 @@ Notes
 :   * Wait, that isn't right...
 
 > I'm doing a (free) stream processing library (just a hobby, won’t be
-> big and professional like gnu) for Haskell. This has been brewing
-> since august, and is starting to get ready. I’d like any feedback on
-> things people like/dislike in pipes, as my library  is an attempt to
-> implement `FreeT` in the style of `Pipes.Internal`.
+> big and professional like conduit) for Haskell. This has been
+> brewing since august, and is starting to get ready. I’d like any
+> feedback on things people like/dislike in pipes, as my library is an
+> attempt to implement `FreeT` in the style of `Pipes.Internal`.
 
 Actual Streaming Announcement
 -----------------------------
@@ -262,6 +269,8 @@ data Pipe l i o u m r =
   | Leftover (Pipe l i o u m r) l
 ```
 
+
+
 `streaming`
 -----------
 
@@ -303,7 +312,11 @@ What this means
 ---------------
 
 Notes
-:   * Conduit is considering ditching foralls
+:   * `forall`, etc. needed to close off input or output for
+      Producers/Consumers/Effects.
+    * Conduit is considering ditching foralls
+    * Conduit actually uses something similar for its internal Stream
+      Fusion
 
 > * `Stream (Of a) m r` is analogous to a `Source` or `Producer` in
 >   conduit and pipes
@@ -313,8 +326,6 @@ Notes
 >   output.
 >     - Streaming instead uses normal functions and function
 >       composition!
-> * Conduit uses a similar type for its internal Stream Fusion
->   framework!
 
 Using `streaming`
 =================
